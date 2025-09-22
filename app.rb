@@ -42,10 +42,10 @@ class WordGuesserApp < Sinatra::Base
     letter = params[:guess].to_s[0]
     ### YOUR CODE HERE ###
     begin
-      @game.guess(letter)
-    rescue ArgumentError => e
-      # 如果 guess 方法抛出 ArgumentError（例如，无效输入），
-      # 我们将其视为无效猜测。
+      result = @game.guess(letter)
+    rescue RepeatedGuessError
+      flash[:message] = "You have already used that letter."
+    rescue ArgumentError
       flash[:message] = "Invalid guess."
     end
     redirect '/show'
@@ -64,7 +64,6 @@ class WordGuesserApp < Sinatra::Base
     elsif status == :lose
       redirect '/lose'
     else
-      # 如果游戏仍在进行中，则渲染 show 页面
       erb :show
     end
   end
@@ -73,7 +72,6 @@ class WordGuesserApp < Sinatra::Base
     if @game.check_win_or_lose == :win
       erb :win
     else
-      # 如果游戏并未胜利，重定向回游戏主页
       redirect '/show'
     end
   end
@@ -82,7 +80,6 @@ class WordGuesserApp < Sinatra::Base
     if @game.check_win_or_lose == :lose
       erb :lose
     else
-      # 如果游戏并未失败，重定向回游戏主页
       redirect '/show'
     end
   end

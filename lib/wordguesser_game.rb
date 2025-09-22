@@ -1,3 +1,4 @@
+class RepeatedGuessError < StandardError; end
 class WordGuesserGame
   # add the necessary class methods, attributes, etc. here
   # to make the tests in spec/wordguesser_game_spec.rb pass.
@@ -19,7 +20,7 @@ class WordGuesserGame
     letter = letter.downcase
 
     if @guesses.include?(letter) || @wrong_guesses.include?(letter)
-      return false
+      raise RepeatedGuessError
     end
 
     if @word.downcase.include?(letter)
