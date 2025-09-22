@@ -41,6 +41,13 @@ class WordGuesserApp < Sinatra::Base
   post '/guess' do
     params[:guess].to_s[0]
     ### YOUR CODE HERE ###
+    begin
+      @game.guess(letter)
+    rescue ArgumentError => e
+      # 如果 guess 方法抛出 ArgumentError（例如，无效输入），
+      # 我们将其视为无效猜测。
+      flash[:message] = "Invalid guess."
+    end
     redirect '/show'
   end
 
@@ -51,16 +58,31 @@ class WordGuesserApp < Sinatra::Base
   # wrong_guesses and word_with_guesses from @game.
   get '/show' do
     ### YOUR CODE HERE ###
-    erb :show # You may change/remove this line
+    if status == :win
+      redirect '/win'
+    elsif status == :lose
+      redirect '/lose'
+    else
+      # 如果游戏仍在进行中，则渲染 show 页面
+      erb :show
+    end
   end
 
   get '/win' do
-    ### YOUR CODE HERE ###
-    erb :win # You may change/remove this line
+    if @game.check_win_or_lose == :win
+      erb :win
+    else
+      # 如果游戏并未胜利，重定向回游戏主页
+      redirect '/show'
+    end
   end
 
   get '/lose' do
-    ### YOUR CODE HERE ###
-    erb :lose # You may change/remove this line
+    if @game.check_win_or_lose == :lose
+      erb :lose
+    else
+      # 如果游戏并未失败，重定向回游戏主页
+      redirect '/show'
+    end
   end
 end
